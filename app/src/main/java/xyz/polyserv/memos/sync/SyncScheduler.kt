@@ -5,11 +5,12 @@ import androidx.work.BackoffPolicy
 import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
+import dagger.hilt.android.qualifiers.ApplicationContext
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 class SyncScheduler @Inject constructor(
-    private val context: Context,
+    @ApplicationContext private val context: Context,
     private val connectivityManager: NetworkConnectivityManager
 ) {
     fun scheduleSyncWork() {

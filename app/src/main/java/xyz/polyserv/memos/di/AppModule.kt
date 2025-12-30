@@ -5,6 +5,8 @@ import androidx.room.Room
 import androidx.work.WorkManager
 import xyz.polyserv.memos.BuildConfig
 import xyz.polyserv.memos.data.local.database.AppDatabase
+import xyz.polyserv.memos.data.local.database.MemoDao
+import xyz.polyserv.memos.data.local.database.SyncQueueDao
 import xyz.polyserv.memos.data.remote.MemosApiService
 import xyz.polyserv.memos.sync.NetworkConnectivityManager
 import dagger.Module
@@ -85,4 +87,14 @@ object AppModule {
     @Provides
     fun provideWorkManager(@ApplicationContext context: Context): WorkManager =
         WorkManager.getInstance(context)
+
+    @Singleton
+    @Provides
+    fun provideMemoDao(database: AppDatabase): MemoDao =
+        database.memoDao()
+
+    @Singleton
+    @Provides
+    fun provideSyncQueueDao(database: AppDatabase): SyncQueueDao =
+        database.syncQueueDao()
 }
