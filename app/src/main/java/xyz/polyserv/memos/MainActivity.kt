@@ -12,6 +12,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import java.net.URLEncoder
+import java.nio.charset.StandardCharsets
 import xyz.polyserv.memos.data.model.Memo
 import xyz.polyserv.memos.presentation.ui.screens.CreateMemoScreen
 import xyz.polyserv.memos.presentation.ui.screens.MemoDetailScreen
@@ -46,7 +48,8 @@ class MainActivity : ComponentActivity() {
                         composable("memos_list") {
                             MemoListScreen(
                                 onMemoClick = { memo ->
-                                    navController.navigate("memo_detail/${memo.id}")
+                                    val encodedId = URLEncoder.encode(memo.id, StandardCharsets.UTF_8.toString())
+                                    navController.navigate("memo_detail/$encodedId")
                                 },
                                 onCreateClick = {
                                     navController.navigate("create_memo")
@@ -78,7 +81,6 @@ class MainActivity : ComponentActivity() {
                             )
                         ) { backStackEntry ->
                             val memoId = backStackEntry.arguments?.getString("memoId") ?: return@composable
-                            // В реальном приложении получите мемо из ViewModel
                             MemoDetailScreen(
                                 memo = Memo(id = memoId, content = ""),
                                 onBackClick = {

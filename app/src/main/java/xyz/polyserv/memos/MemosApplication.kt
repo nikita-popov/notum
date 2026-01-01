@@ -17,28 +17,16 @@ class MemosApplication : Application(), Configuration.Provider {
     @Inject
     lateinit var syncScheduler: SyncScheduler
 
-    //override val getWorkManagerConfiguration: Configuration =
     override val workManagerConfiguration: Configuration =
-        // Используем lazy инициализацию и проверку
+        // Lazy init
         if (::workerFactory.isInitialized) {
             Configuration.Builder()
                 .setWorkerFactory(workerFactory)
                 .build()
         } else {
-            // Если ещё не инжектен, возвращаем дефолтную конфигурацию
+            // Default config
             Configuration.Builder().build()
         }
-
-    /*private val workManagerConfig: Configuration by lazy {
-        Configuration.Builder()
-            .setWorkerFactory(workerFactory)
-            .build()
-    }
-
-    override fun workManagerConfiguration(): Configuration = workManagerConfig*/
-    //override fun getWorkManagerConfiguration(): Configuration {
-    //    return Configuration.Builder().build()
-    //}
 
     override fun onCreate() {
         super.onCreate()
@@ -47,7 +35,7 @@ class MemosApplication : Application(), Configuration.Provider {
             Timber.plant(Timber.DebugTree())
         }
 
-        // Запланировать синхронизацию при старте
+        // Sync on startup
         syncScheduler.scheduleSyncWork(this)
     }
 }

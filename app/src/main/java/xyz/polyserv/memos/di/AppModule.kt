@@ -3,7 +3,6 @@ package xyz.polyserv.memos.di
 import android.content.Context
 import androidx.room.Room
 import androidx.work.WorkManager
-import xyz.polyserv.memos.BuildConfig
 import xyz.polyserv.memos.data.local.database.AppDatabase
 import xyz.polyserv.memos.data.local.database.MemoDao
 import xyz.polyserv.memos.data.local.database.SyncQueueDao
@@ -78,9 +77,10 @@ object AppModule {
             chain.proceed(request)
         }
 
+        // Keep order
         return OkHttpClient.Builder()
             .addInterceptor(authInterceptor)
-            .addInterceptor(hostSelectionInterceptor) // Важен порядок!
+            .addInterceptor(hostSelectionInterceptor)
             .addInterceptor(loggingInterceptor)
             .build()
     }
@@ -88,7 +88,7 @@ object AppModule {
     @Singleton
     @Provides
     fun provideRetrofit(okHttpClient: OkHttpClient, json: Json): Retrofit {
-        val json = Json { ignoreUnknownKeys = true } // Полезно игнорировать лишние поля
+        val json = Json { ignoreUnknownKeys = true }
         val contentType = "application/json".toMediaType()
         return Retrofit.Builder()
             .baseUrl("http://localhost/")

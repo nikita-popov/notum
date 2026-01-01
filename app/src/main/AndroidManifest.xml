@@ -36,13 +36,5 @@
                 android:value="androidx.startup"
                 tools:node="remove" />
         </provider>
-        <!--provider
-            android:name="androidx.startup.InitializationProvider"
-            android:authorities="${applicationId}.androidx-startup"
-            android:exported="false">
-            <meta-data
-                android:name="xyz.polyserv.memos.sync.SyncInitializer"
-                android:value="androidx.startup" />
-        </provider-->
     </application>
 </manifest>

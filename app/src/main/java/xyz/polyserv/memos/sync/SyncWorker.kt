@@ -15,7 +15,6 @@ class SyncWorker(
     params: WorkerParameters
 ) : CoroutineWorker(context, params) {
 
-    // Entry point для доступа к Hilt зависимостям
     @EntryPoint
     @InstallIn(SingletonComponent::class)
     interface SyncWorkerEntryPoint {
@@ -24,22 +23,22 @@ class SyncWorker(
 
     override suspend fun doWork(): Result {
         return try {
-            Timber.d("🔄 Начало синхронизации...")
+            Timber.d("Sync started")
 
-            // Получаем EntryPoint и достаём Repository
+            // Getting EntryPoint and get Repository
             val entryPoint = EntryPointAccessors.fromApplication(
                 applicationContext,
                 SyncWorkerEntryPoint::class.java
             )
             val repository = entryPoint.getMemoRepository()
 
-            // Вызываем синхронизацию
+            // Call sync
             repository.syncWithServer()
 
-            Timber.d("✅ Синхронизация завершена успешно")
+            Timber.d("Sync successfully finished")
             Result.success()
         } catch (e: Exception) {
-            Timber.e("❌ Ошибка синхронизации: ${e.message}")
+            Timber.e("Sync failed: ${e.message}")
             Result.retry()
         }
     }

@@ -15,10 +15,8 @@ class MemoRepository @Inject constructor(
     private val remoteDataSource: RemoteDataSource
 ) {
 
-    // Получить все заметки локально
     fun getMemos(): Flow<List<Memo>> = localDataSource.getAllMemosFlow()
 
-    // Добавить новую заметку
     suspend fun addMemo(memo: Memo) {
         localDataSource.saveMemo(memo)
         localDataSource.addToSyncQueue(
@@ -31,7 +29,6 @@ class MemoRepository @Inject constructor(
         )
     }
 
-    // Обновить заметку
     suspend fun updateMemo(memo: Memo) {
         localDataSource.saveMemo(memo)
         localDataSource.addToSyncQueue(
@@ -44,7 +41,6 @@ class MemoRepository @Inject constructor(
         )
     }
 
-    // Удалить заметку
     suspend fun deleteMemo(memoId: String) {
         localDataSource.deleteMemo(memoId)
         localDataSource.addToSyncQueue(
@@ -59,29 +55,17 @@ class MemoRepository @Inject constructor(
 
     fun searchMemos(query: String): Flow<List<Memo>> =  localDataSource.searchMemos(query)
 
-    // 👇 ГЛАВНЫЙ МЕТОД СИНХРОНИЗАЦИИ 👇
     suspend fun syncWithServer() {
         try {
-            // 1️⃣ Сначала загружаем свежие заметки с сервера
+            // First get memos from server
             val remoteMemos = remoteDataSource.getAllMemos()
 
-            // Сохраняем их локально (обновляем или вставляем)
+            // Saving locally (update or create)
             for (remoteMemo in remoteMemos) {
-                val existingMemo = localDataSource.getMemoById(remoteMemo.id)
-                if (existingMemo != null) {
-                    // Если заметка уже существует, обновляем только если серверная версия новее
-                    if (remoteMemo.updatedTs > existingMemo.updatedTs) {
-                        localDataSource.saveMemo(remoteMemo)
-                    }
-                } else {
-                    // Если заметки нет, вставляем новую
-                    localDataSource.saveMemo(remoteMemo)
-                }
+                localDataSource.saveMemo(remoteMemo)
             }
-
-            // 2️⃣ Затем синхронизируем очередь локальных изменений
+            // Sync local changes
             val syncQueue = localDataSource.getSyncQueue()
-
             for (queueItem in syncQueue) {
                 try {
                     when (queueItem.action) {
@@ -101,15 +85,12 @@ class MemoRepository @Inject constructor(
                             remoteDataSource.deleteMemo(queueItem.memoId)
                         }
                     }
-                    // Если успешно отправилось, удаляем из очереди
                     localDataSource.removeSyncQueueItem(queueItem.id)
                 } catch (e: Exception) {
-                    // Если ошибка, оставляем в очереди (повторим позже)
                     e.printStackTrace()
                 }
             }
         } catch (e: Exception) {
-            // Ошибка при загрузке с сервера - просто логируем и продолжаем
             e.printStackTrace()
         }
     }

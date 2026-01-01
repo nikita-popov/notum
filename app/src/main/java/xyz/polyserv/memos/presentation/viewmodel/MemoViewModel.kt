@@ -6,7 +6,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import xyz.polyserv.memos.data.model.Memo
-import xyz.polyserv.memos.data.model.SyncStatus
 import xyz.polyserv.memos.data.repository.MemoRepository
 import xyz.polyserv.memos.sync.NetworkConnectivityManager
 import xyz.polyserv.memos.sync.SyncScheduler
@@ -14,7 +13,6 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -57,7 +55,7 @@ class MemoViewModel @Inject constructor(
             connectivityManager.isConnected.collect { isOnline ->
                 _uiState.value = _uiState.value.copy(isOnline = isOnline)
                 if (isOnline) {
-                    // Автоматическая синхронизация при восстановлении сети
+                    // Auto sync on online
                     syncPendingChanges()
                 }
             }
@@ -80,19 +78,19 @@ class MemoViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 _uiState.value = _uiState.value.copy(isLoading = true, error = null)
-                val mem = Memo(content=content)
-                val memo = memoRepository.addMemo(mem)
+                val memo = Memo(content=content)
+                memoRepository.addMemo(memo)
                 _uiState.value = _uiState.value.copy(
                     isLoading = false,
                     selectedMemo = null,
                     error = if (connectivityManager.isNetworkAvailable()) null
-                    else "Offline mode: мемо будет синхронизировано при подключении"
+                    else "Offline mode: The memo will be synced when connected."
                 )
             } catch (e: Exception) {
                 Timber.e(e, "Failed to create memo")
                 _uiState.value = _uiState.value.copy(
                     isLoading = false,
-                    error = "Ошибка при создании: ${e.message}"
+                    error = "Error when creating: ${e.message}"
                 )
             }
         }
@@ -109,7 +107,7 @@ class MemoViewModel @Inject constructor(
                 Timber.e(e, "Failed to update memo")
                 _uiState.value = _uiState.value.copy(
                     isLoading = false,
-                    error = "Ошибка при обновлении: ${e.message}"
+                    error = "Error during the update: ${e.message}"
                 )
             }
         }
@@ -128,7 +126,7 @@ class MemoViewModel @Inject constructor(
                 Timber.e(e, "Failed to delete memo")
                 _uiState.value = _uiState.value.copy(
                     isLoading = false,
-                    error = "Ошибка при удалении: ${e.message}"
+                    error = "Error when deleting: ${e.message}"
                 )
             }
         }
@@ -168,7 +166,7 @@ class MemoViewModel @Inject constructor(
                 Timber.e(e, "Failed to sync")
                 _uiState.value = _uiState.value.copy(
                     syncInProgress = false,
-                    error = "Ошибка синхронизации: ${e.message}"
+                    error = "Syncing error: ${e.message}"
                 )
             }
         }
@@ -178,7 +176,7 @@ class MemoViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 SyncScheduler(context).syncNow(context)
-                Timber.d("Синхронизация запущена")
+                Timber.d("Syncing started")
             } catch (e: Exception) {
                 Timber.e("Sync failed: ${e.message}")
             }

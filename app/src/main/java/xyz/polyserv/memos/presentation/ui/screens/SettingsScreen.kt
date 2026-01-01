@@ -22,7 +22,7 @@ fun SettingsScreen(
 
     LaunchedEffect(uiState.isSaved) {
         if (uiState.isSaved) {
-            snackbarHostState.showSnackbar("Настройки сохранены")
+            snackbarHostState.showSnackbar("Settings saved")
         }
     }
 
@@ -30,10 +30,10 @@ fun SettingsScreen(
         snackbarHost = { SnackbarHost(snackbarHostState) },
         topBar = {
             TopAppBar(
-                title = { Text("Настройки сервера") },
+                title = { Text("Server settings") },
                 navigationIcon = {
                     IconButton(onClick = onBackClick) {
-                        Icon(Icons.Filled.ArrowBack, contentDescription = "Назад")
+                        Icon(Icons.Filled.ArrowBack, contentDescription = "Back")
                     }
                 }
             )
@@ -47,7 +47,7 @@ fun SettingsScreen(
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             Text(
-                text = "Подключение",
+                text = "Connection",
                 style = MaterialTheme.typography.titleMedium,
                 color = MaterialTheme.colorScheme.primary
             )
@@ -55,7 +55,7 @@ fun SettingsScreen(
             OutlinedTextField(
                 value = uiState.serverUrl,
                 onValueChange = { viewModel.updateUrl(it) },
-                label = { Text("URL Сервера") },
+                label = { Text("Server URL") },
                 placeholder = { Text("http://192.168.1.5:5230") },
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true
@@ -65,7 +65,7 @@ fun SettingsScreen(
                 value = uiState.accessToken,
                 onValueChange = { viewModel.updateToken(it) },
                 label = { Text("Access Token (Bearer)") },
-                placeholder = { Text("Скопируйте токен из Memos") },
+                placeholder = { Text("Copy token from Memos") },
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true
             )
@@ -78,11 +78,11 @@ fun SettingsScreen(
             ) {
                 Icon(Icons.Default.Save, contentDescription = null)
                 Spacer(modifier = Modifier.width(8.dp))
-                Text("Сохранить")
+                Text("Save")
             }
 
             Text(
-                text = "Примечание: Убедитесь, что сервер доступен по сети.",
+                text = "Note: Make sure that the server is accessible over the network.",
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )

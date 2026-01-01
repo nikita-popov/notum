@@ -16,16 +16,13 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import xyz.polyserv.memos.R
 import xyz.polyserv.memos.data.model.Memo
 import xyz.polyserv.memos.presentation.ui.components.MemoCard
 import xyz.polyserv.memos.presentation.ui.components.OfflineBanner
-import xyz.polyserv.memos.presentation.ui.components.SyncStatusIndicator
 import xyz.polyserv.memos.presentation.viewmodel.MemoViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -44,7 +41,7 @@ fun MemoListScreen(
 
     LaunchedEffect(Unit) {
         if (!uiState.isOnline) {
-            // Попытка синхронизации при загрузке, если онлайн
+            // TODO
         }
     }
 
@@ -101,7 +98,7 @@ fun MemoListScreen(
                     Icon(Icons.Default.Refresh, contentDescription = stringResource(id = R.string.sync))
                 }
                 IconButton(onClick = onSettingsClick) {
-                    Icon(Icons.Default.Settings, contentDescription = "Настройки")
+                    Icon(Icons.Default.Settings, contentDescription = "Settings")
                 }
             }
         )
