@@ -51,15 +51,11 @@ android {
         buildConfig = true
     }
 
-    //defaultConfig {
-    //    buildConfigField("String", "BASE_URL", "\"http://10.54.1.1:5230/api/v1/\"")
-    //}
-
     composeOptions {
         kotlinCompilerExtensionVersion = "1.5.3"
     }
 
-    fun Packaging.() {
+    packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }

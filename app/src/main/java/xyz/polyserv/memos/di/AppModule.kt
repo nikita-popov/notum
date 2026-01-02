@@ -88,7 +88,7 @@ object AppModule {
     @Singleton
     @Provides
     fun provideRetrofit(okHttpClient: OkHttpClient, json: Json): Retrofit {
-        val json = Json { ignoreUnknownKeys = true }
+        //val json = Json { ignoreUnknownKeys = true }
         val contentType = "application/json".toMediaType()
         return Retrofit.Builder()
             .baseUrl("http://localhost/")
