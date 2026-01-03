@@ -176,7 +176,12 @@ class MemoRepository @Inject constructor(
 
                     if (existingMemo == null) {
                         Timber.d("New memo from server: ${remoteMemo.id}")
-                        localDataSource.saveMemo(remoteMemo)
+                        val syncedMemo = remoteMemo.copy(
+                            syncStatus = SyncStatus.SYNCED,
+                            lastSyncTime = System.currentTimeMillis(),
+                            isLocalOnly = false
+                        )
+                        localDataSource.saveMemo(syncedMemo)
                     } else {
                         Timber.d("Updating memo from server: ${remoteMemo.id} (server: ${remoteMemo.updatedTs}, local: ${existingMemo.updatedTs})")
                         if (remoteMemo.updatedTs > existingMemo.updatedTs) {
@@ -187,6 +192,12 @@ class MemoRepository @Inject constructor(
                             localDataSource.saveMemo(updatedMemo)
                             Timber.d("Memo updated from server: ${remoteMemo.id}")
                         } else {
+                            val syncedMemo = remoteMemo.copy(
+                                syncStatus = SyncStatus.SYNCED,
+                                lastSyncTime = System.currentTimeMillis(),
+                                isLocalOnly = false
+                            )
+                            localDataSource.saveMemo(syncedMemo)
                             Timber.d("Memo up-to-date: ${remoteMemo.id}")
                         }
                     }
