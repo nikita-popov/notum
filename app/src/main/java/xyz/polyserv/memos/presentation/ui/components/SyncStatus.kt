@@ -6,7 +6,9 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Cloud
+import androidx.compose.material.icons.filled.CloudDone
 import androidx.compose.material.icons.filled.CloudOff
+import androidx.compose.material.icons.filled.CloudSync
 import androidx.compose.material.icons.filled.Error
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -23,37 +25,58 @@ import androidx.compose.ui.res.stringResource
 @Composable
 fun SyncStatusIndicator(
     syncStatus: SyncStatus,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    compact: Boolean = false
 ) {
     val (icon, color, label) = when (syncStatus) {
-        SyncStatus.SYNCED -> Triple(Icons.Default.Check, Color(0xFF4CAF50), stringResource(id = R.string.synced))
+        SyncStatus.SYNCED -> Triple(Icons.Default.CloudDone, Color(0xFF4CAF50), stringResource(id = R.string.synced))
         SyncStatus.PENDING -> Triple(Icons.Default.CloudOff, Color(0xFFFFC107), stringResource(id = R.string.waiting))
-        SyncStatus.SYNCING -> Triple(Icons.Default.Cloud, Color(0xFF2196F3), stringResource(id = R.string.sync))
+        SyncStatus.SYNCING -> Triple(Icons.Default.CloudSync, Color(0xFF2196F3), stringResource(id = R.string.sync))
         SyncStatus.FAILED -> Triple(Icons.Default.Error, Color(0xFFF44336), stringResource(id = R.string.error))
     }
 
-    Row(
-        modifier = modifier
-            .background(
-                color = color.copy(alpha = 0.1f),
-                shape = RoundedCornerShape(4.dp)
+    if (compact) {
+        Row(
+            modifier = modifier
+                .background(
+                    color = color.copy(alpha = 0.1f),
+                    shape = RoundedCornerShape(4.dp)
+                )
+                .padding(horizontal = 6.dp, vertical = 3.dp),
+            horizontalArrangement = Arrangement.Center,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Icon(
+                imageVector = icon,
+                contentDescription = label,
+                tint = color,
+                modifier = modifier.size(16.dp)
             )
-            .padding(horizontal = 6.dp, vertical = 3.dp),
-        horizontalArrangement = Arrangement.Center,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Icon(
-            imageVector = icon,
-            contentDescription = label,
-            tint = color,
-            modifier = Modifier.size(12.dp)
-        )
-        Text(
-            text = label,
-            style = MaterialTheme.typography.labelSmall,
-            color = color,
-            modifier = Modifier.padding(start = 4.dp)
-        )
+        }
+    } else {
+        Row(
+            modifier = modifier
+                .background(
+                    color = color.copy(alpha = 0.1f),
+                    shape = RoundedCornerShape(4.dp)
+                )
+                .padding(horizontal = 6.dp, vertical = 3.dp),
+            horizontalArrangement = Arrangement.Center,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Icon(
+                imageVector = icon,
+                contentDescription = label,
+                tint = color,
+                modifier = Modifier.size(12.dp)
+            )
+            Text(
+                text = label,
+                style = MaterialTheme.typography.labelSmall,
+                color = color,
+                modifier = Modifier.padding(start = 4.dp)
+            )
+        }
     }
 }
 

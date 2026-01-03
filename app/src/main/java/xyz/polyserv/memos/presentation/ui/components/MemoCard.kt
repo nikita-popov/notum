@@ -41,7 +41,7 @@ fun MemoCard(
                     overflow = TextOverflow.Ellipsis,
                     modifier = Modifier.weight(1f)
                 )
-                SyncStatusIndicator(syncStatus = memo.syncStatus)
+                SyncStatusIndicator(syncStatus = memo.syncStatus, compact = true)
             }
 
             Text(
