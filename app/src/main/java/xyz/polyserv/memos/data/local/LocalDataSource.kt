@@ -21,36 +21,49 @@ class LocalDataSource @Inject constructor(
     suspend fun saveMemo(memo: Memo): Boolean {
         val existing = memoDao.getMemoById(memo.id)
         if (existing != null) {
-            if (existing.updatedTs < memo.updatedTs) {
+            // Update existing memo
+            if (existing.updatedTs <= memo.updatedTs) {
                 memoDao.updateMemo(memo)
-                Timber.d("Memo updated")
+                Timber.d("Memo updated: ${memo.id}")
                 return true
             } else {
-                Timber.d("Memo already exists")
+                Timber.d("Memo is older than existing, skipping: ${memo.id}")
                 return false
             }
         } else {
+            // Insert new memo
             memoDao.insertMemo(memo)
-            Timber.d("Memo inserted")
+            Timber.d("Memo inserted: ${memo.id}")
             return true
         }
     }
 
-    suspend fun deleteMemo(id: String) = memoDao.deleteMemoById(id)
+    suspend fun deleteMemo(id: String) {
+        memoDao.deleteMemoById(id)
+        Timber.d("Memo deleted: $id")
+    }
 
-    suspend fun addToSyncQueue(item: SyncQueueItem) =
+    suspend fun addToSyncQueue(item: SyncQueueItem) {
         syncQueueDao.insertSyncQueueItem(item)
+    }
 
-    suspend fun getSyncQueue(): List<SyncQueueItem> =
-        syncQueueDao.getAllQueueItems()
+    suspend fun getSyncQueue(): List<SyncQueueItem> {
+        return syncQueueDao.getAllQueueItems()
+    }
 
-    suspend fun removeSyncQueueItem(id: Int) =
+    suspend fun removeSyncQueueItem(id: Int) {
         syncQueueDao.deleteQueueItem(id)
+    }
 
-    suspend fun clearMemoSyncQueue(memoId: String) =
+    suspend fun clearMemoSyncQueue(memoId: String) {
         syncQueueDao.deleteQueueItemsByMemoId(memoId)
+    }
 
-    suspend fun updateMemoSyncStatus(id: String, status: xyz.polyserv.memos.data.model.SyncStatus, time: Long) {
+    suspend fun updateMemoSyncStatus(
+        id: String,
+        status: xyz.polyserv.memos.data.model.SyncStatus,
+        time: Long
+    ) {
         memoDao.updateMemoSyncStatus(id, status, time)
     }
 }
