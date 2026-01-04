@@ -51,4 +51,47 @@ data class Memo(
     override fun toString(): String {
         return "Memo(id=$id, serverId=$serverId, content=${content.take(30)}, syncStatus=$syncStatus, isLocalOnly=$isLocalOnly)"
     }
+
+    /**
+     * Получить timestamp создания для сравнения
+     */
+    fun getCreateTimestamp(): Long {
+        return xyz.polyserv.memos.utils.TimeUtils.isoToTimestamp(createTime)
+    }
+
+    /**
+     * Получить timestamp обновления для сравнения
+     */
+    fun getUpdateTimestamp(): Long {
+        return xyz.polyserv.memos.utils.TimeUtils.isoToTimestamp(updateTime)
+    }
+
+    /**
+     * Получить отформатированное время создания
+     */
+    fun getFormattedCreateTime(): String {
+        return xyz.polyserv.memos.utils.TimeUtils.formatRelativeTime(createTime)
+    }
+
+    /**
+     * Получить отформатированное время обновления
+     */
+    fun getFormattedUpdateTime(): String {
+        return xyz.polyserv.memos.utils.TimeUtils.formatRelativeTime(updateTime)
+    }
+
+    /**
+     * Получить полное отформатированное время создания
+     */
+    fun getFullCreateTime(): String {
+        return xyz.polyserv.memos.utils.TimeUtils.formatFullTime(createTime)
+    }
+
+    /**
+     * Получить полное отформатированное время обновления
+     */
+    fun getFullUpdateTime(): String {
+        return xyz.polyserv.memos.utils.TimeUtils.formatFullTime(updateTime)
+    }
+
 }

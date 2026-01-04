@@ -5,6 +5,7 @@ import timber.log.Timber
 import xyz.polyserv.memos.data.model.Memo
 import xyz.polyserv.memos.data.model.MemoRequest
 import xyz.polyserv.memos.data.model.SyncStatus
+import xyz.polyserv.memos.data.model.toMemo
 
 class RemoteDataSource @Inject constructor(
     private val apiService: MemosApiService
@@ -13,21 +14,7 @@ class RemoteDataSource @Inject constructor(
         return try {
             val response = apiService.listMemos()
             Timber.d("getAllMemos response: ${response.memos.size} memos")
-
-            response.memos.map { memoData ->
-                Memo(
-                    id = memoData.name,
-                    content = memoData.content,
-                    createTime = memoData.createTime,
-                    updateTime = memoData.updateTime,
-                    name = memoData.name,
-                    //state = memoData.state, TODO
-                    syncStatus = SyncStatus.SYNCED,
-                    lastSyncTime = System.currentTimeMillis(),
-                    isLocalOnly = false,
-                    serverId = memoData.name
-                )
-            }
+            response.memos.map { it.toMemo() }
         } catch (e: Exception) {
             Timber.e(e, "Failed to fetch all memos")
             throw e

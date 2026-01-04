@@ -22,12 +22,9 @@ data class MemoResponse(
     val uid: String = "",
     val creator: String = "", // Format: users/{user}
 
-    // TIme
-    @SerialName("create_time")
+    // Time
     val createTime: String = "",
-    @SerialName("update_time")
     val updateTime: String = "",
-    @SerialName("display_time")
     val displayTime: String = "",
 
     // Content

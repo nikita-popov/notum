@@ -7,9 +7,12 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import xyz.polyserv.memos.data.model.Memo
+import xyz.polyserv.memos.R
 
 @Composable
 fun MemoCard(
@@ -29,6 +32,16 @@ fun MemoCard(
         Column(
             modifier = Modifier.padding(12.dp)
         ) {
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                // TODO: tags
+                SyncStatusIndicator(syncStatus = memo.syncStatus, compact = true)
+            }
+
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
@@ -38,15 +51,35 @@ fun MemoCard(
                     style = MaterialTheme.typography.bodyMedium,
                     modifier = Modifier.weight(1f)
                 )
-                SyncStatusIndicator(syncStatus = memo.syncStatus, compact = true)
             }
 
-            Text(
-                text = "${memo.createTime} [${memo.updateTime}]",
-                style = MaterialTheme.typography.labelSmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.padding(top = 8.dp)
-            )
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Column(modifier = Modifier.weight(1f)) {
+                    val createTimeText = memo.getFormattedCreateTime()
+                    if (createTimeText.isNotEmpty()) {
+                        Text(
+                            text = "${stringResource(id = R.string.created)}: $createTimeText",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+
+                    if (memo.updateTime != memo.createTime) {
+                        val updateTimeText = memo.getFormattedUpdateTime()
+                        if (updateTimeText.isNotEmpty()) {
+                            Text(
+                                text = "${stringResource(id = R.string.updated)}: $updateTimeText",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+                    }
+                }
+            }
         }
     }
 }
