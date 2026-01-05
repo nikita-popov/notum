@@ -5,6 +5,7 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import java.util.UUID
 import kotlinx.serialization.Serializable
+import xyz.polyserv.notum.utils.TimeUtils
 
 enum class SyncStatus {
     SYNCED, PENDING, SYNCING, FAILED
@@ -48,30 +49,29 @@ data class Memo(
 ) {
     override fun toString(): String {
         return "Memo(id=$id, name=$name, content=${content.take(30)}, syncStatus=$syncStatus, isLocalOnly=$isLocalOnly)"
-
     }
 
     fun getCreateTimestamp(): Long {
-        return xyz.polyserv.notum.utils.TimeUtils.isoToTimestamp(createTime)
+        return TimeUtils.isoToTimestamp(createTime)
     }
 
     fun getUpdateTimestamp(): Long {
-        return xyz.polyserv.notum.utils.TimeUtils.isoToTimestamp(updateTime)
+        return TimeUtils.isoToTimestamp(updateTime)
     }
 
     fun getFormattedCreateTime(): String {
-        return xyz.polyserv.notum.utils.TimeUtils.formatRelativeTime(createTime)
+        return TimeUtils.formatRelativeTime(createTime)
     }
 
     fun getFormattedUpdateTime(): String {
-        return xyz.polyserv.notum.utils.TimeUtils.formatRelativeTime(updateTime)
+        return TimeUtils.formatRelativeTime(updateTime)
     }
 
     fun getFullCreateTime(): String {
-        return xyz.polyserv.notum.utils.TimeUtils.formatFullTime(createTime)
+        return TimeUtils.formatFullTime(createTime)
     }
 
     fun getFullUpdateTime(): String {
-        return xyz.polyserv.notum.utils.TimeUtils.formatFullTime(updateTime)
+        return TimeUtils.formatFullTime(updateTime)
     }
 }

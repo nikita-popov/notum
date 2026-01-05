@@ -10,6 +10,7 @@ import xyz.polyserv.notum.data.model.Memo
 import xyz.polyserv.notum.data.model.SyncQueueItem
 import xyz.polyserv.notum.data.model.SyncAction
 import xyz.polyserv.notum.data.model.SyncStatus
+import xyz.polyserv.notum.utils.TimeUtils
 
 @Singleton
 class MemoRepository @Inject constructor(
@@ -25,35 +26,46 @@ class MemoRepository @Inject constructor(
 
     suspend fun addMemo(memo: Memo) {
         Timber.d("Adding memo: $memo")
-        localDataSource.saveMemo(memo)
+        // Устанавливаем UTC время при создании
+        val currentTimeUtc = TimeUtils.getCurrentTimeIso()
+        val memoWithUtcTime = memo.copy(
+            createTime = currentTimeUtc,
+            updateTime = currentTimeUtc
+        )
+        localDataSource.saveMemo(memoWithUtcTime)
         localDataSource.addToSyncQueue(
             SyncQueueItem(
-                memoId = memo.id,
+                memoId = memoWithUtcTime.id,
                 action = SyncAction.CREATE,
-                payload = memo.content,
+                payload = memoWithUtcTime.content,
                 timestamp = System.currentTimeMillis()
             )
         )
-        Timber.d("Memo added to sync queue: ${memo.id}")
+        Timber.d("Memo added to sync queue: ${memoWithUtcTime.id}")
     }
 
     suspend fun updateMemo(memo: Memo) {
         Timber.d("Updating memo: $memo")
-        localDataSource.saveMemo(memo)
-        val action = if (memo.name.isNotEmpty() || !memo.isLocalOnly) {
+        // Устанавливаем UTC время при обновлении
+        val currentTimeUtc = TimeUtils.getCurrentTimeIso()
+        val memoWithUtcTime = memo.copy(
+            updateTime = currentTimeUtc
+        )
+        localDataSource.saveMemo(memoWithUtcTime)
+        val action = if (memoWithUtcTime.name.isNotEmpty() || !memoWithUtcTime.isLocalOnly) {
             SyncAction.UPDATE
         } else {
             SyncAction.CREATE
         }
         localDataSource.addToSyncQueue(
             SyncQueueItem(
-                memoId = memo.id,
+                memoId = memoWithUtcTime.id,
                 action = action,
-                payload = memo.content,
+                payload = memoWithUtcTime.content,
                 timestamp = System.currentTimeMillis()
             )
         )
-        Timber.d("Memo update added to sync queue: ${memo.id}")
+        Timber.d("Memo update added to sync queue: ${memoWithUtcTime.id}")
     }
 
     suspend fun deleteMemo(memoId: String) {
@@ -95,15 +107,7 @@ class MemoRepository @Inject constructor(
                                 val serverMemo = remoteDataSource.createMemo(memo.content)
 
                                 Timber.d("CREATE action - Server returned: $serverMemo")
-                                //Timber.d("CREATE action - Deleting old local memo: ${memo.id}")
-                                //localDataSource.deleteMemo(memo.id)
 
-                                //Timber.d("CREATE action - Saving server memo: ${serverMemo.id}")
-                                //val syncedMemo = serverMemo.copy(
-                                //    syncStatus = SyncStatus.SYNCED,
-                                //    lastSyncTime = System.currentTimeMillis(),
-                                //    isLocalOnly = false
-                                //)
                                 Timber.d("CREATE action - Updating memo with serverId: ${serverMemo.name}")
                                 val syncedMemo = memo.copy(
                                     name = serverMemo.name,
@@ -137,9 +141,9 @@ class MemoRepository @Inject constructor(
 
                                 Timber.d("UPDATE action - Server returned: $serverMemo")
 
-                                Timber.d("UPDATE action - Updating local memo")
-                                val syncedMemo = serverMemo.copy(
-                                    id = syncingMemo.id,
+                                Timber.d("UPDATE action - Updating local memo with server update time")
+                                val syncedMemo = memo.copy(
+                                    updateTime = serverMemo.updateTime,
                                     syncStatus = SyncStatus.SYNCED,
                                     lastSyncTime = System.currentTimeMillis()
                                 )
@@ -150,9 +154,6 @@ class MemoRepository @Inject constructor(
 
                                 Timber.d("UPDATE action - Memo updated and synced: ${memo.id}")
                             } else {
-                                // Memo still not synced or removed
-                                //Timber.w("UPDATE action - Memo not found or no serverId: ${queueItem.memoId}")
-                                //localDataSource.removeSyncQueueItem(queueItem.id)
                                 if (memo != null && memo.name.isEmpty()) {
                                     Timber.w("UPDATE action - No serverId yet, checking if CREATE is pending")
                                     val hasPendingCreate = syncQueue.any {
@@ -203,9 +204,7 @@ class MemoRepository @Inject constructor(
 
                 for (remoteMemo in remoteMemos) {
                     // Check if memo exists locally
-                    //val existingMemo = localDataSource.getMemoById(remoteMemo.id)
                     val existingMemo = localDataSource.getMemoByName(remoteMemo.name)
-
                     if (existingMemo == null) {
                         Timber.d("New memo from server: ${remoteMemo.id}")
                         val syncedMemo = remoteMemo.copy(
@@ -216,21 +215,23 @@ class MemoRepository @Inject constructor(
                         )
                         localDataSource.saveMemo(syncedMemo)
                     } else {
-                        if (remoteMemo.getUpdateTimestamp() > existingMemo.getUpdateTimestamp()) {
-                            Timber.d("Updating memo from server: ${remoteMemo.id} (server: ${remoteMemo.updateTime}, local: ${existingMemo.updateTime})")
-                            val updatedMemo = remoteMemo.copy(
+                        val remoteTimestamp = remoteMemo.getUpdateTimestamp()
+                        val localTimestamp = existingMemo.getUpdateTimestamp()
+
+                        Timber.d("Comparing timestamps for ${remoteMemo.id}: remote=$remoteTimestamp (${remoteMemo.updateTime}), local=$localTimestamp (${existingMemo.updateTime})")
+
+                        if (remoteTimestamp > localTimestamp) {
+                            Timber.d("Updating memo from server: ${remoteMemo.id}")
+                            val updatedMemo = existingMemo.copy(
+                                content = remoteMemo.content,
+                                updateTime = remoteMemo.updateTime,
+                                createTime = remoteMemo.createTime,
                                 syncStatus = SyncStatus.SYNCED,
                                 lastSyncTime = System.currentTimeMillis()
                             )
                             localDataSource.saveMemo(updatedMemo)
                             Timber.d("Memo updated from server: ${remoteMemo.id}")
                         } else {
-                            val syncedMemo = remoteMemo.copy(
-                                syncStatus = SyncStatus.SYNCED,
-                                lastSyncTime = System.currentTimeMillis(),
-                                isLocalOnly = false
-                            )
-                            localDataSource.saveMemo(syncedMemo)
                             Timber.d("Memo up-to-date: ${remoteMemo.id}")
                         }
                     }

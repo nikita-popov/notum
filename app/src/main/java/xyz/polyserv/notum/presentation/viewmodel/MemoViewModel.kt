@@ -117,7 +117,7 @@ class MemoViewModel @Inject constructor(
                     val updated = existing.copy(
                         content = content,
                         syncStatus = SyncStatus.PENDING,
-                        updateTime = TimeUtils.timestampToIso(System.currentTimeMillis())
+                        updateTime = TimeUtils.getCurrentTimeIso()
                     )
                     memoRepository.updateMemo(updated)
                     _uiState.value = _uiState.value.copy(isLoading = false)

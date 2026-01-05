@@ -3,6 +3,7 @@ package xyz.polyserv.notum.utils
 import java.time.Instant
 import java.time.LocalDateTime
 import java.time.ZoneId
+import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
 import java.util.*
@@ -25,7 +26,7 @@ object TimeUtils {
     }
 
     /**
-     * Конвертирует timestamp в ISO 8601 строку
+     * Конвертирует timestamp в ISO 8601 строку (UTC)
      */
     fun timestampToIso(timestamp: Long): String {
         return if (timestamp == 0L) {
@@ -33,6 +34,20 @@ object TimeUtils {
         } else {
             Instant.ofEpochMilli(timestamp).toString()
         }
+    }
+
+    /**
+     * Возвращает текущее время в формате ISO 8601 (UTC)
+     */
+    fun getCurrentTimeIso(): String {
+        return Instant.now().toString()
+    }
+
+    /**
+     * Возвращает текущий timestamp в миллисекундах
+     */
+    fun getCurrentTimestamp(): Long {
+        return System.currentTimeMillis()
     }
 
     /**
@@ -69,7 +84,7 @@ object TimeUtils {
     }
 
     /**
-     * Форматирует ISO 8601 время в полный формат
+     * Форматирует ISO 8601 время в полный формат (локальное время)
      * Пример: "15 января 2024, 14:30"
      */
     fun formatFullTime(isoString: String): String {
