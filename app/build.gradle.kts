@@ -5,9 +5,8 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     id("com.google.dagger.hilt.android")
-    id("kotlin-kapt")
-    //id("kotlinx-serialization")
-    id("org.jetbrains.kotlin.plugin.serialization") version "2.0.20"
+    id("com.google.devtools.ksp")
+    id("org.jetbrains.kotlin.plugin.serialization") version "2.0.21"
 }
 
 android {
@@ -61,6 +60,12 @@ android {
 }
 
 dependencies {
+    configurations {
+        all {
+            exclude(group= "com.intellij", module= "annotations")
+        }
+    }
+
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
@@ -94,13 +99,13 @@ dependencies {
     //val roomVersion = "2.6.1"
     implementation(libs.androidx.room.runtime)
     implementation(libs.androidx.room.ktx)
-    kapt(libs.androidx.room.compiler)
+    ksp(libs.androidx.room.compiler)
 
     // Hilt Dependency Injection
     implementation(libs.hilt.android)
-    kapt(libs.hilt.compiler)
+    ksp(libs.hilt.compiler)
     implementation(libs.androidx.hilt.work.v120)
-    kapt(libs.androidx.hilt.compiler.v120)
+    ksp(libs.androidx.hilt.compiler.v120)
 
     // Retrofit & OkHttp
     implementation(libs.retrofit)
@@ -122,12 +127,6 @@ dependencies {
     // Logging
     implementation(libs.timber)
 
-    configurations {
-        all {
-            exclude(group= "com.intellij", module= "annotations")
-        }
-    }
-
     implementation("org.jetbrains:annotations:23.0.0")
 
     // Markdown
@@ -140,6 +139,7 @@ dependencies {
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(composeBom)
     androidTestImplementation(libs.androidx.ui.test.junit4)
+
     // Unit Testing
     testImplementation("org.mockito:mockito-core:5.7.0")
     testImplementation("org.mockito.kotlin:mockito-kotlin:5.1.0")
