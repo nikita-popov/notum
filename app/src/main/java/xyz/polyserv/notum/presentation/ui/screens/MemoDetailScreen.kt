@@ -17,6 +17,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import timber.log.Timber
 import xyz.polyserv.notum.data.model.Memo
+import xyz.polyserv.notum.presentation.ui.components.MarkdownText
 import xyz.polyserv.notum.presentation.ui.components.SyncStatusIndicator
 import xyz.polyserv.notum.presentation.viewmodel.MemoViewModel
 import xyz.polyserv.notum.R
@@ -111,16 +112,16 @@ fun MemoDetailScreen(
 
                     SyncStatusIndicator(syncStatus = memo.syncStatus)
 
-                    Text(
+                    /*Text(
                         text = memo.content.ifEmpty { stringResource(id = R.string.no_content) },
                         style = MaterialTheme.typography.bodyLarge,
                         color = MaterialTheme.colorScheme.onBackground,
                         modifier = Modifier.padding(top = 16.dp)
-                    )
-                    /*MarkdownText(
+                    )*/
+                    MarkdownText(
                         markdown = memo.content.ifEmpty { "No content" },
                         modifier = Modifier.padding(top = 16.dp)
-                    )*/
+                    )
 
                     Spacer(modifier = Modifier.height(32.dp))
 

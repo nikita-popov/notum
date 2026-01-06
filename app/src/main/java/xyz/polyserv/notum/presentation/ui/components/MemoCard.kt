@@ -46,10 +46,14 @@ fun MemoCard(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Text(
+                /*Text(
                     text = memo.content,
                     style = MaterialTheme.typography.bodyMedium,
                     modifier = Modifier.weight(1f)
+                )*/
+                MarkdownText(
+                    markdown = memo.content.ifEmpty { "No content" },
+                    modifier = Modifier.padding(top = 16.dp)
                 )
             }
 
