@@ -12,9 +12,7 @@ plugins {
 
 android {
     namespace = "xyz.polyserv.notum"
-    compileSdk {
-        version = release(36)
-    }
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "xyz.polyserv.notum"
@@ -79,7 +77,7 @@ dependencies {
     implementation("androidx.work:work-runtime-ktx:2.9.1")
 
     // Jetpack Compose
-    val composeBom = platform("androidx.compose:compose-bom:2024.04.01")
+    val composeBom = platform("androidx.compose:compose-bom:2025.01.00")
     implementation(composeBom)
     implementation(libs.androidx.ui)
     implementation(libs.androidx.ui.graphics)
