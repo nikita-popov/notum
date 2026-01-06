@@ -15,6 +15,7 @@ class SyncScheduler@Inject constructor(
         )
             .setConstraints(
                 Constraints.Builder()
+                    .setRequiresBatteryNotLow(true)
                     .setRequiredNetworkType(NetworkType.CONNECTED)
                     .build()
             )
