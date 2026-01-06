@@ -6,9 +6,11 @@ import retrofit2.http.GET
 import retrofit2.http.PATCH
 import retrofit2.http.POST
 import retrofit2.http.Path
+import retrofit2.http.Query
 import xyz.polyserv.notum.data.model.ListMemosResponse
 import xyz.polyserv.notum.data.model.MemoRequest
 import xyz.polyserv.notum.data.model.MemoResponse
+import xyz.polyserv.notum.data.model.UpdateMemoRequest
 
 interface MemosApiService {
     @GET("memos")
@@ -23,7 +25,8 @@ interface MemosApiService {
     @PATCH("memos/{name}")
     suspend fun updateMemo(
         @Path("name") name: String,
-        @Body request: MemoRequest
+        @Body request: MemoRequest,
+        @Query("updateMask") updateMask: String
     ): MemoResponse
 
     @DELETE("memos/{name}")

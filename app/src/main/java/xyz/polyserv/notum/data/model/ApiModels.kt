@@ -12,6 +12,8 @@ data class MemoRequest(
     val pinned: Boolean = false,
     @SerialName("display_time")
     val displayTime: String? = null,
+    @SerialName("update_time")
+    val updateTime: String? = null,
 )
 
 @SuppressLint("UnsafeOptInUsageError")

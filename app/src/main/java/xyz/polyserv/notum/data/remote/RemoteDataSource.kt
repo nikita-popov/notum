@@ -5,7 +5,9 @@ import timber.log.Timber
 import xyz.polyserv.notum.data.model.Memo
 import xyz.polyserv.notum.data.model.MemoRequest
 import xyz.polyserv.notum.data.model.SyncStatus
+import xyz.polyserv.notum.data.model.UpdateMemoRequest
 import xyz.polyserv.notum.data.model.toMemo
+import xyz.polyserv.notum.util.TimeUtils
 
 class RemoteDataSource @Inject constructor(
     private val apiService: MemosApiService
@@ -55,7 +57,15 @@ class RemoteDataSource @Inject constructor(
         return try {
             Timber.d("Updating memo: $name with content: ${content.take(50)}...")
 
-            val response = apiService.updateMemo(name.stripMemosPrefix(), MemoRequest(content = content))
+            val currentTimeUtc = TimeUtils.getCurrentTimeIso()
+            val response = apiService.updateMemo(
+                name = name.stripMemosPrefix(),
+                request = MemoRequest(
+                    content = content,
+                    updateTime = currentTimeUtc
+                ),
+                updateMask = "content,update_time"
+            )
             Timber.d("Update response received: $response")
 
             if (response.name.isEmpty()) {
