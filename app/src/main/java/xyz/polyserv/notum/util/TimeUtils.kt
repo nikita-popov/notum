@@ -1,5 +1,8 @@
 package xyz.polyserv.notum.util
 
+import android.content.Context
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.res.stringResource
 import java.time.Instant
 import java.time.LocalDateTime
 import java.time.ZoneId
@@ -7,6 +10,7 @@ import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
 import java.util.*
+import xyz.polyserv.notum.R
 
 object TimeUtils {
 
@@ -54,7 +58,7 @@ object TimeUtils {
      * Форматирует ISO 8601 время для отображения пользователю
      * Примеры: "2 часа назад", "Вчера", "15 янв 2024"
      */
-    fun formatRelativeTime(isoString: String): String {
+    fun formatRelativeTime(context: Context, isoString: String): String {
         if (isoString.isEmpty()) return ""
 
         return try {
@@ -67,12 +71,22 @@ object TimeUtils {
             val daysAgo = ChronoUnit.DAYS.between(dateTime, now)
 
             when {
+                /*
                 minutesAgo < 1 -> "Только что"
                 minutesAgo < 60 -> "$minutesAgo мин назад"
                 hoursAgo < 24 -> "$hoursAgo ч назад"
                 daysAgo == 0L -> "Сегодня"
                 daysAgo == 1L -> "Вчера"
                 daysAgo < 7 -> "$daysAgo дн назад"
+                */
+
+                minutesAgo < 1 -> context.getString(R.string.now)
+                minutesAgo < 60 -> "$minutesAgo ${context.getString(R.string.minutes_ago)}"
+                hoursAgo < 24 -> "$hoursAgo ${context.getString(R.string.hours_ago)}"
+                daysAgo == 0L -> context.getString(R.string.today)
+                daysAgo == 1L -> context.getString(R.string.yesterday)
+                daysAgo < 7 -> "$daysAgo ${context.getString(R.string.days_ago)}"
+
                 else -> {
                     val formatter = DateTimeFormatter.ofPattern("d MMM yyyy", Locale.getDefault())
                     dateTime.format(formatter)

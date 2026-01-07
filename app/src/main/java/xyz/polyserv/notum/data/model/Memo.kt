@@ -1,6 +1,7 @@
 package xyz.polyserv.notum.data.model
 
 import android.annotation.SuppressLint
+import android.content.Context
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import java.util.UUID
@@ -59,12 +60,12 @@ data class Memo(
         return TimeUtils.isoToTimestamp(updateTime)
     }
 
-    fun getFormattedCreateTime(): String {
-        return TimeUtils.formatRelativeTime(createTime)
+    fun getFormattedCreateTime(context: Context): String {
+        return TimeUtils.formatRelativeTime(context, createTime)
     }
 
-    fun getFormattedUpdateTime(): String {
-        return TimeUtils.formatRelativeTime(updateTime)
+    fun getFormattedUpdateTime(context: Context): String {
+        return TimeUtils.formatRelativeTime(context,updateTime)
     }
 
     fun getFullCreateTime(): String {

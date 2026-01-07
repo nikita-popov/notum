@@ -43,4 +43,10 @@
     <string name="language">Язык</string>
     <string name="select_language">Выберите язык</string>
     <string name="connection">Подключение</string>
+    <string name="now">Сейчас</string>
+    <string name="minutes_ago">минут назад</string>
+    <string name="hours_ago">часов назад</string>
+    <string name="today">сегодня</string>
+    <string name="yesterday">вчера</string>
+    <string name="days_ago">дней назад</string>
 </resources>

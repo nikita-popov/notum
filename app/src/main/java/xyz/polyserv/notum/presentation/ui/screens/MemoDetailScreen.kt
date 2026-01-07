@@ -12,6 +12,7 @@ import androidx.compose.material3.*
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -33,6 +34,7 @@ fun MemoDetailScreen(
 ) {
     val uiState = viewModel.uiState.value
     var showDeleteDialog by remember { mutableStateOf(false) }
+    val context = LocalContext.current
 
     LaunchedEffect(memoId) {
         viewModel.loadMemoById(memoId)
@@ -126,19 +128,25 @@ fun MemoDetailScreen(
                     Spacer(modifier = Modifier.height(32.dp))
 
                     // Metadata
-                    Text(
-                        text = "${stringResource(id = R.string.created)}: ${memo.createTime}",
-                        style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-
-                    if (memo.updateTime != memo.createTime) {
+                    val createTimeText = memo.getFormattedCreateTime(context)
+                    if (createTimeText.isNotEmpty()) {
                         Text(
-                            text = "${stringResource(id = R.string.updated)}: ${memo.updateTime}",
+                            text = "${stringResource(id = R.string.created)}: $createTimeText",
                             style = MaterialTheme.typography.labelSmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            modifier = Modifier.padding(top = 4.dp)
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
+                    }
+
+                    if (memo.getUpdateTimestamp() > memo.getCreateTimestamp()) {
+                        val updateTimeText = memo.getFormattedUpdateTime(context)
+                        if (updateTimeText.isNotEmpty()) {
+                            Text(
+                                text = "${stringResource(id = R.string.updated)}: $updateTimeText",
+                                style = MaterialTheme.typography.labelSmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                modifier = Modifier.padding(top = 4.dp)
+                            )
+                        }
                     }
                 }
             } else {

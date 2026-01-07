@@ -3,6 +3,7 @@ package xyz.polyserv.notum.presentation.ui.components
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontFamily
 import com.mikepenz.markdown.m3.Markdown
 import com.mikepenz.markdown.m3.markdownColor
 import com.mikepenz.markdown.m3.markdownTypography
@@ -28,8 +29,12 @@ fun MarkdownText(
             h5 = MaterialTheme.typography.titleMedium,
             h6 = MaterialTheme.typography.titleSmall,
             text = MaterialTheme.typography.bodyMedium,
-            code = MaterialTheme.typography.bodyMedium,
-            inlineCode = MaterialTheme.typography.bodyMedium,
+            code = MaterialTheme.typography.bodyMedium.copy(
+                fontFamily = FontFamily.Monospace
+            ),
+            inlineCode = MaterialTheme.typography.bodyMedium.copy(
+                fontFamily = FontFamily.Monospace
+            ),
             quote = MaterialTheme.typography.bodyMedium,
             paragraph = MaterialTheme.typography.bodyMedium,
             ordered = MaterialTheme.typography.bodyMedium,

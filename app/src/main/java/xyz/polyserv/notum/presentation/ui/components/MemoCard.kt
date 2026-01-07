@@ -9,6 +9,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import xyz.polyserv.notum.data.model.Memo
@@ -20,6 +21,8 @@ fun MemoCard(
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val context = LocalContext.current
+
     Card(
         modifier = modifier
             .fillMaxWidth()
@@ -38,7 +41,15 @@ fun MemoCard(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                // TODO: tags
+                val createTimeText = memo.getFormattedCreateTime(context)
+                if (createTimeText.isNotEmpty()) {
+                    Text(
+                        text = createTimeText,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+
                 SyncStatusIndicator(syncStatus = memo.syncStatus, compact = true)
             }
 
@@ -63,25 +74,7 @@ fun MemoCard(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Column(modifier = Modifier.weight(1f)) {
-                    val createTimeText = memo.getFormattedCreateTime()
-                    if (createTimeText.isNotEmpty()) {
-                        Text(
-                            text = "${stringResource(id = R.string.created)}: $createTimeText",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                    }
-
-                    if (memo.updateTime != memo.createTime) {
-                        val updateTimeText = memo.getFormattedUpdateTime()
-                        if (updateTimeText.isNotEmpty()) {
-                            Text(
-                                text = "${stringResource(id = R.string.updated)}: $updateTimeText",
-                                style = MaterialTheme.typography.bodySmall,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
-                        }
-                    }
+                    // TODO: tags
                 }
             }
         }

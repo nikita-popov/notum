@@ -43,4 +43,10 @@
     <string name="language">Language</string>
     <string name="select_language">Select Language</string>
     <string name="connection">Connection</string>
+    <string name="now">now</string>
+    <string name="minutes_ago">minutes ago</string>
+    <string name="hours_ago">hours ago</string>
+    <string name="today">today</string>
+    <string name="yesterday">yesterday</string>
+    <string name="days_ago">days ago</string>
 </resources>
