@@ -2,6 +2,7 @@ package xyz.polyserv.notum.util
 
 import android.app.Activity
 import android.content.res.Configuration
+import android.os.Build
 import java.util.Locale
 import xyz.polyserv.notum.data.model.AppLanguage
 
@@ -14,7 +15,22 @@ object LocaleHelper {
         val config = Configuration(activity.resources.configuration)
         config.setLocale(locale)
 
-        activity.resources.updateConfiguration(config, activity.resources.displayMetrics)
+        // Используем современный подход для API 17+
+        /*
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            val context = activity.createConfigurationContext(config)
+            activity.resources.updateConfiguration(
+                context.resources.configuration,
+                context.resources.displayMetrics
+            )
+        } else {
+            @Suppress("DEPRECATION")
+            activity.resources.updateConfiguration(config, activity.resources.displayMetrics)
+        }
+
+        // Пересоздаём активность для применения изменений
+        activity.recreate()
+        */
     }
 
     private fun getSystemLocale(): Locale {

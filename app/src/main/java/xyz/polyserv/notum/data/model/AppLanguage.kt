@@ -13,8 +13,11 @@ enum class AppLanguage(val code: String, val displayName: String) {
         return when (this) {
             SYSTEM -> null
             else -> when (Build.VERSION.SDK_INT) {
-                in 1..35 -> Locale(code)
-                else -> Locale.of(code)
+                in 1..35 ->
+                    @Suppress("DEPRECATION")
+                    Locale(code)
+                else ->
+                    Locale.of(code)
             }
         }
     }
