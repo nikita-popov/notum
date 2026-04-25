@@ -9,6 +9,36 @@ plugins {
     id("org.jetbrains.kotlin.plugin.serialization") version "2.0.21"
 }
 
+// ── Версия из git ──────────────────────────────────────────────────────────
+fun gitVersionName(): String {
+    return try {
+        val tag = providers.exec {
+            commandLine("git", "describe", "--tags", "--exact-match", "HEAD")
+        }.standardOutput.asText.get().trim()
+        tag.removePrefix("v")
+    } catch (_: Exception) {
+        try {
+            val hash = providers.exec {
+                commandLine("git", "rev-parse", "--short", "HEAD")
+            }.standardOutput.asText.get().trim()
+            "$hash-dev"
+        } catch (_: Exception) {
+            "0.0.0-unknown"
+        }
+    }
+}
+
+fun gitVersionCode(): Int {
+    return try {
+        providers.exec {
+            commandLine("git", "rev-list", "--count", "HEAD")
+        }.standardOutput.asText.get().trim().toInt()
+    } catch (_: Exception) {
+        1
+    }
+}
+// ──────────────────────────────────────────────────────────────────────────
+
 android {
     namespace = "xyz.polyserv.notum"
     compileSdk = 36
@@ -17,8 +47,8 @@ android {
         applicationId = "xyz.polyserv.notum"
         minSdk = 26
         targetSdk = 36
-        versionCode = 1
-        versionName = "1.0"
+        versionCode = gitVersionCode()
+        versionName = gitVersionName()
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -35,6 +65,17 @@ android {
             )
         }
     }
+
+    // Разбивка по ABI: каждый APK только для своей архитектуры
+    splits {
+        abi {
+            isEnable = true
+            reset()
+            include("arm64-v8a", "armeabi-v7a", "x86_64")
+            isUniversalApk = true
+        }
+    }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
@@ -62,26 +103,19 @@ android {
 dependencies {
     configurations {
         all {
-            exclude(group= "com.intellij", module= "annotations")
+            exclude(group = "com.intellij", module = "annotations")
         }
     }
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
-    //testImplementation(libs.junit)
-    //androidTestImplementation(libs.androidx.junit)
-    //androidTestImplementation(libs.androidx.espresso.core)
-
-    //implementation("androidx.core:core-ktx:1.12.0")
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.lifecycle.viewmodel.ktx)
     implementation(libs.lifecycle.livedata.ktx)
     implementation(libs.androidx.activity.compose)
-    //implementation("androidx.appcompat:appcompat:1.6.1")
     implementation("androidx.work:work-runtime-ktx:2.9.1")
 
-    // Jetpack Compose
     val composeBom = platform("androidx.compose:compose-bom:2025.01.00")
     implementation(composeBom)
     implementation(libs.androidx.ui)
@@ -91,59 +125,44 @@ dependencies {
     implementation(libs.androidx.material.icons.extended)
     debugImplementation(libs.androidx.ui.tooling)
 
-    // Navigation
     implementation(libs.androidx.navigation.compose)
     implementation(libs.androidx.hilt.navigation.compose)
 
-    // Room Database
-    //val roomVersion = "2.6.1"
     implementation(libs.androidx.room.runtime)
     implementation(libs.androidx.room.ktx)
     ksp(libs.androidx.room.compiler)
 
-    // Hilt Dependency Injection
     implementation(libs.hilt.android)
     ksp(libs.hilt.compiler)
     implementation(libs.androidx.hilt.work.v120)
     ksp(libs.androidx.hilt.compiler.v120)
 
-    // Retrofit & OkHttp
     implementation(libs.retrofit)
     implementation(libs.retrofit2.kotlinx.serialization.converter)
     implementation(libs.okhttp)
     implementation(libs.logging.interceptor)
 
-    // Kotlinx Serialization
     implementation(libs.kotlinx.serialization.json)
 
-    // WorkManager
     implementation(libs.androidx.work.runtime.ktx)
     implementation(libs.androidx.hilt.work)
 
-    // Coroutines
     implementation(libs.kotlinx.coroutines.android)
     implementation(libs.kotlinx.coroutines.core)
 
-    // Logging
     implementation(libs.timber)
 
     implementation("org.jetbrains:annotations:23.0.0")
 
-    // Markdown
     implementation("com.mikepenz:multiplatform-markdown-renderer:0.27.0")
     implementation("com.mikepenz:multiplatform-markdown-renderer-m3:0.27.0")
-    //implementation("io.noties.markwon:syntax-highlight:4.6.2")
-    //implementation("io.noties.prism4j:prism4j:2.0.0")
-    //implementation("io.coil-kt:coil-compose:2.5.0")
 
-    // Testing
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(composeBom)
     androidTestImplementation(libs.androidx.ui.test.junit4)
 
-    // Unit Testing
     testImplementation("org.mockito:mockito-core:5.7.0")
     testImplementation("org.mockito.kotlin:mockito-kotlin:5.1.0")
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.3")
