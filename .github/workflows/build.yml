@@ -22,13 +22,10 @@ jobs:
         with:
           java-version: '17'
           distribution: 'temurin'
+          cache: gradle  # кэширует ~/.gradle/caches и ~/.gradle/wrapper
 
-      # Скачивает gradle-wrapper.jar и кэширует его + Gradle cache
-      # Решает проблему "no main manifest attribute" без коммита jar в репо
-      - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v4
-        with:
-          gradle-version: wrapper  # использует версию из gradle-wrapper.properties
+      - name: Grant execute permission for gradlew
+        run: chmod +x ./gradlew
 
       - name: Determine version
         id: version
