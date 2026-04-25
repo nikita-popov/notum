@@ -35,6 +35,9 @@
                 android:name="androidx.work.WorkManagerInitializer"
                 android:value="androidx.startup"
                 tools:node="remove" />
+            <meta-data
+                android:name="xyz.polyserv.notum.sync.SyncInitializer"
+                android:value="androidx.startup" />
         </provider>
     </application>
 </manifest>
