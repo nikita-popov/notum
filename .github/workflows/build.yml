@@ -6,6 +6,9 @@ on:
       - 'v*'
   workflow_dispatch:
 
+permissions:
+  contents: write  # нужно для создания GitHub Releases
+
 jobs:
   build:
     name: Build APK
@@ -22,7 +25,7 @@ jobs:
         with:
           java-version: '17'
           distribution: 'temurin'
-          cache: gradle  # кэширует ~/.gradle/caches и ~/.gradle/wrapper
+          cache: gradle
 
       - name: Grant execute permission for gradlew
         run: chmod +x ./gradlew
