@@ -9,6 +9,8 @@ A standalone, offline-first note-taking app for Android with optional synchroniz
 > **⚠ Work in Progress**  
 > This project is in early development stage. Features are being actively developed and the API may change.
 
+<img src="https://raw.githubusercontent.com/nikita-popov/notum/refs/heads/master/doc/screen.jpg" alt="Notum Screenshot" height="512" />
+
 ## Features
 
 - **Fully Offline** - Works completely without internet connection or server
